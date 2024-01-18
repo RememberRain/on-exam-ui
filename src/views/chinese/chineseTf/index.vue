@@ -105,10 +105,10 @@
           <el-input v-model="form.content" type="textarea" placeholder="请输入内容" />
         </el-form-item>
         <el-form-item label="选项一" prop="choiceOne">
-          <el-input v-model="form.choiceOne" placeholder="请输入对或错" />
+          <el-input v-model="form.choiceOne" placeholder="请输入选项一" />
         </el-form-item>
         <el-form-item label="选项二" prop="choiceTwo">
-          <el-input v-model="form.choiceTwo" placeholder="请输入对或错" />
+          <el-input v-model="form.choiceTwo" placeholder="请输入选项二" />
         </el-form-item>
         <el-form-item label="答案" prop="answer">
           <el-select v-model="form.answer" placeholder="请选择答案">
