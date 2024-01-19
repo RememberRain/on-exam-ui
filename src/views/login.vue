@@ -132,9 +132,9 @@ export default {
         if (valid) {
           this.loading = true;
           if (this.loginForm.rememberMe) {
-            Cookies.set("username", this.loginForm.username, { expires: 30 });
-            Cookies.set("password", encrypt(this.loginForm.password), { expires: 30 });
-            Cookies.set('rememberMe', this.loginForm.rememberMe, { expires: 30 });
+            Cookies.set("username", this.loginForm.username, { expires: 1440 });
+            Cookies.set("password", encrypt(this.loginForm.password), { expires: 1440 });
+            Cookies.set('rememberMe', this.loginForm.rememberMe, { expires: 1440 });
           } else {
             Cookies.remove("username");
             Cookies.remove("password");
