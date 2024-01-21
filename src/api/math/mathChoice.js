@@ -1,44 +1,44 @@
 import request from '@/utils/request'
 
 // 查询选择题列表
-export function listChoiceChoice(query) {
+export function listMathChoice(query) {
   return request({
-    url: '/chinese/choiceChoice/list',
+    url: '/math/mathChoice/list',
     method: 'get',
     params: query
   })
 }
 
 // 查询选择题详细
-export function getChoiceChoice(questionId) {
+export function getMathChoice(questionId) {
   return request({
-    url: '/chinese/choiceChoice/' + questionId,
+    url: '/math/mathChoice/' + questionId,
     method: 'get'
   })
 }
 
 // 新增选择题
-export function addChoiceChoice(data) {
+export function addMathChoice(data) {
   return request({
-    url: '/chinese/choiceChoice',
+    url: '/math/mathChoice',
     method: 'post',
     data: data
   })
 }
 
 // 修改选择题
-export function updateChoiceChoice(data) {
+export function updateMathChoice(data) {
   return request({
-    url: '/chinese/choiceChoice',
+    url: '/math/mathChoice',
     method: 'put',
     data: data
   })
 }
 
 // 删除选择题
-export function delChoiceChoice(questionId) {
+export function delMathChoice(questionId) {
   return request({
-    url: '/chinese/choiceChoice/' + questionId,
+    url: '/math/mathChoice/' + questionId,
     method: 'delete'
   })
 }

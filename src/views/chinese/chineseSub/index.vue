@@ -147,6 +147,12 @@ export default {
       form: {},
       // 表单校验
       rules: {
+        content: [
+          { required: true, message: "题干不能为空", trigger: "blur" }
+        ],
+        answer: [
+          { required: true, message: "参考答案不能为空", trigger: "blur" }
+        ]
       }
     };
   },

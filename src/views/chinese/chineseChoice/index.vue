@@ -9,6 +9,16 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
+      <el-form-item label="题型" prop="type">
+        <el-select v-model="queryParams.type" placeholder="请选择题型" clearable>
+          <el-option
+            v-for="dict in dict.type.choice_type"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -23,7 +33,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['chinese:chineseTf:add']"
+          v-hasPermi="['chinese:chineseChoice:add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -34,7 +44,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['chinese:chineseTf:edit']"
+          v-hasPermi="['chinese:chineseChoice:edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -45,7 +55,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['chinese:chineseTf:remove']"
+          v-hasPermi="['chinese:chineseChoice:remove']"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -55,19 +65,19 @@
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
-          v-hasPermi="['chinese:chineseTf:export']"
+          v-hasPermi="['chinese:chineseChoice:export']"
         >导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="chineseTfList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="chineseChoiceList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="题目编号" align="center" prop="questionId" />
       <el-table-column label="题干" align="center" prop="content" />
-      <el-table-column label="答案" align="center" prop="answer">
+      <el-table-column label="题型" align="center" prop="type">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.tf_answer" :value="scope.row.answer"/>
+          <dict-tag :options="dict.type.choice_type" :value="scope.row.type"/>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -77,19 +87,19 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['chinese:chineseTf:edit']"
+            v-hasPermi="['chinese:chineseChoice:edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['chinese:chineseTf:remove']"
+            v-hasPermi="['chinese:chineseChoice:remove']"
           >删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-
+    
     <pagination
       v-show="total>0"
       :total="total"
@@ -98,22 +108,38 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改判断题对话框 -->
+    <!-- 添加或修改选择题对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="题干" prop="content">
           <el-input v-model="form.content" type="textarea" placeholder="请输入内容" />
         </el-form-item>
-        <el-form-item label="选项一" prop="choiceOne">
-          <el-input v-model="form.choiceOne" placeholder="请输入对或错" />
+        <el-form-item label="A" prop="choiceOne">
+          <el-input v-model="form.choiceOne" placeholder="请输入A" />
         </el-form-item>
-        <el-form-item label="选项二" prop="choiceTwo">
-          <el-input v-model="form.choiceTwo" placeholder="请输入对或错" />
+        <el-form-item label="B" prop="choiceTwo">
+          <el-input v-model="form.choiceTwo" placeholder="请输入B" />
+        </el-form-item>
+        <el-form-item label="C" prop="choiceThree">
+          <el-input v-model="form.choiceThree" placeholder="请输入C" />
+        </el-form-item>
+        <el-form-item label="D" prop="choiceFour">
+          <el-input v-model="form.choiceFour" placeholder="请输入D" />
         </el-form-item>
         <el-form-item label="答案" prop="answer">
-          <el-select v-model="form.answer" placeholder="请选择答案">
+          <el-checkbox-group v-model="form.answer">
+            <el-checkbox
+              v-for="dict in dict.type.choice_answer"
+              :key="dict.value"
+              :label="dict.value">
+              {{dict.label}}
+            </el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+        <el-form-item label="题型" prop="type">
+          <el-select v-model="form.type" placeholder="请选择题型">
             <el-option
-              v-for="dict in dict.type.tf_answer"
+              v-for="dict in dict.type.choice_type"
               :key="dict.value"
               :label="dict.label"
               :value="dict.value"
@@ -130,11 +156,11 @@
 </template>
 
 <script>
-import { listChineseTf, getChineseTf, delChineseTf, addChineseTf, updateChineseTf } from "@/api/chinese/chineseTf";
+import { listChineseChoice, getChineseChoice, delChineseChoice, addChineseChoice, updateChineseChoice } from "@/api/chinese/chineseChoice";
 
 export default {
-  name: "ChineseTf",
-  dicts: ['tf_answer'],
+  name: "ChineseChoice",
+  dicts: ['choice_answer', 'choice_type'],
   data() {
     return {
       // 遮罩层
@@ -149,8 +175,8 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 判断题表格数据
-      chineseTfList: [],
+      // 选择题表格数据
+      chineseChoiceList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -161,6 +187,7 @@ export default {
         pageSize: 10,
         questionId: null,
         content: null,
+        type: null
       },
       // 表单参数
       form: {},
@@ -170,13 +197,22 @@ export default {
           { required: true, message: "题干不能为空", trigger: "blur" }
         ],
         choiceOne: [
-          { required: true, message: "选项一不能为空", trigger: "blur" }
+          { required: true, message: "A不能为空", trigger: "blur" }
         ],
         choiceTwo: [
-          { required: true, message: "选项二不能为空", trigger: "blur" }
+          { required: true, message: "B不能为空", trigger: "blur" }
+        ],
+        choiceThree: [
+          { required: true, message: "C不能为空", trigger: "blur" }
+        ],
+        choiceFour: [
+          { required: true, message: "D不能为空", trigger: "blur" }
         ],
         answer: [
-          { required: true, message: "答案不能为空", trigger: "change" }
+          { required: true, message: "答案不能为空", trigger: "blur" }
+        ],
+        type: [
+          { required: true, message: "题型不能为空", trigger: "change" }
         ]
       }
     };
@@ -185,11 +221,11 @@ export default {
     this.getList();
   },
   methods: {
-    /** 查询判断题列表 */
+    /** 查询选择题列表 */
     getList() {
       this.loading = true;
-      listChineseTf(this.queryParams).then(response => {
-        this.chineseTfList = response.rows;
+      listChineseChoice(this.queryParams).then(response => {
+        this.chineseChoiceList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
@@ -206,7 +242,10 @@ export default {
         content: null,
         choiceOne: null,
         choiceTwo: null,
-        answer: null
+        choiceThree: null,
+        choiceFour: null,
+        answer: [],
+        type: null
       };
       this.resetForm("form");
     },
@@ -230,30 +269,32 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加判断题";
+      this.title = "添加选择题";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
       const questionId = row.questionId || this.ids
-      getChineseTf(questionId).then(response => {
+      getChineseChoice(questionId).then(response => {
         this.form = response.data;
+        this.form.answer = this.form.answer.split(",");
         this.open = true;
-        this.title = "修改判断题";
+        this.title = "修改选择题";
       });
     },
     /** 提交按钮 */
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
+          this.form.answer = this.form.answer.join(",");
           if (this.form.questionId != null) {
-            updateChineseTf(this.form).then(response => {
+            updateChineseChoice(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addChineseTf(this.form).then(response => {
+            addChineseChoice(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -265,8 +306,8 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const questionIds = row.questionId || this.ids;
-      this.$modal.confirm('是否确认删除判断题编号为"' + questionIds + '"的数据项？').then(function() {
-        return delChineseTf(questionIds);
+      this.$modal.confirm('是否确认删除选择题编号为"' + questionIds + '"的数据项？').then(function() {
+        return delChineseChoice(questionIds);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
@@ -274,9 +315,9 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('chinese/chineseTf/export', {
+      this.download('chinese/chineseChoice/export', {
         ...this.queryParams
-      }, `chineseTf_${new Date().getTime()}.xlsx`)
+      }, `chineseChoice_${new Date().getTime()}.xlsx`)
     }
   }
 };

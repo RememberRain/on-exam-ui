@@ -23,7 +23,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['chinese:chineseTf:add']"
+          v-hasPermi="['english:englishTf:add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -34,7 +34,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['chinese:chineseTf:edit']"
+          v-hasPermi="['english:englishTf:edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -45,7 +45,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['chinese:chineseTf:remove']"
+          v-hasPermi="['english:englishTf:remove']"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -55,13 +55,13 @@
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
-          v-hasPermi="['chinese:chineseTf:export']"
+          v-hasPermi="['english:englishTf:export']"
         >导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="chineseTfList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="englishTfList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="题目编号" align="center" prop="questionId" />
       <el-table-column label="题干" align="center" prop="content" />
@@ -77,14 +77,14 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['chinese:chineseTf:edit']"
+            v-hasPermi="['english:englishTf:edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['chinese:chineseTf:remove']"
+            v-hasPermi="['english:englishTf:remove']"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -130,10 +130,10 @@
 </template>
 
 <script>
-import { listChineseTf, getChineseTf, delChineseTf, addChineseTf, updateChineseTf } from "@/api/chinese/chineseTf";
+import { listEnglishTf, getEnglishTf, delEnglishTf, addEnglishTf, updateEnglishTf } from "@/api/english/englishTf";
 
 export default {
-  name: "ChineseTf",
+  name: "EnglishTf",
   dicts: ['tf_answer'],
   data() {
     return {
@@ -150,7 +150,7 @@ export default {
       // 总条数
       total: 0,
       // 判断题表格数据
-      chineseTfList: [],
+      englishTfList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -188,8 +188,8 @@ export default {
     /** 查询判断题列表 */
     getList() {
       this.loading = true;
-      listChineseTf(this.queryParams).then(response => {
-        this.chineseTfList = response.rows;
+      listEnglishTf(this.queryParams).then(response => {
+        this.englishTfList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
@@ -236,7 +236,7 @@ export default {
     handleUpdate(row) {
       this.reset();
       const questionId = row.questionId || this.ids
-      getChineseTf(questionId).then(response => {
+      getEnglishTf(questionId).then(response => {
         this.form = response.data;
         this.open = true;
         this.title = "修改判断题";
@@ -247,13 +247,13 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.questionId != null) {
-            updateChineseTf(this.form).then(response => {
+            updateEnglishTf(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addChineseTf(this.form).then(response => {
+            addEnglishTf(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -266,7 +266,7 @@ export default {
     handleDelete(row) {
       const questionIds = row.questionId || this.ids;
       this.$modal.confirm('是否确认删除判断题编号为"' + questionIds + '"的数据项？').then(function() {
-        return delChineseTf(questionIds);
+        return delEnglishTf(questionIds);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
@@ -274,9 +274,9 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('chinese/chineseTf/export', {
+      this.download('english/englishTf/export', {
         ...this.queryParams
-      }, `chineseTf_${new Date().getTime()}.xlsx`)
+      }, `englishTf_${new Date().getTime()}.xlsx`)
     }
   }
 };
