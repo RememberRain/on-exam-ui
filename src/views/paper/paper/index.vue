@@ -54,18 +54,16 @@
         />
       </el-form-item>
       <el-form-item label="开始时间" prop="startTime">
-        <el-date-picker clearable
-          v-model="queryParams.startTime"
-          type="date"
-          value-format="yyyy-MM-dd"
+        <el-date-picker
+          v-model="value1"
+          type="datetime"
           placeholder="请选择开始时间">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间" prop="endTime">
-        <el-date-picker clearable
-          v-model="queryParams.endTime"
-          type="date"
-          value-format="yyyy-MM-dd"
+        <el-date-picker
+          v-model="value2"
+          type="datetime"
           placeholder="请选择结束时间">
         </el-date-picker>
       </el-form-item>
@@ -198,18 +196,16 @@
           <el-input v-model="form.createUserId" placeholder="请输入出题人工号" />
         </el-form-item>
         <el-form-item label="开始时间" prop="startTime">
-          <el-date-picker clearable
-            v-model="form.startTime"
-            type="date"
-            value-format="yyyy-MM-dd"
+          <el-date-picker
+            v-model="value3"
+            type="datetime"
             placeholder="请选择开始时间">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="结束时间" prop="endTime">
-          <el-date-picker clearable
-            v-model="form.endTime"
-            type="date"
-            value-format="yyyy-MM-dd"
+          <el-date-picker
+            v-model="value4"
+            type="datetime"
             placeholder="请选择结束时间">
           </el-date-picker>
         </el-form-item>
@@ -230,6 +226,11 @@ export default {
   dicts: ['paper_status', 'subject'],
   data() {
     return {
+      //时间参数
+      value1: '',
+      value2: '',
+      value3: '',
+      value4: '',
       // 遮罩层
       loading: true,
       // 选中数组
