@@ -157,10 +157,10 @@
           <el-button
             size="mini"
             type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
+            icon="el-icon-collection"
+            @click="goToFormPaper(scope.row)"
             v-hasPermi="['paper:paper:remove']"
-          >删除</el-button>
+          >进入组卷</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -367,6 +367,9 @@ export default {
           }
         }
       });
+    },
+    goToFormPaper(row){
+      this.$router.push({path: '/paper/formPaper', query: {id: row.paperId, name: row.name, subject: row.subject}});
     },
     /** 删除按钮操作 */
     handleDelete(row) {
