@@ -1,15 +1,19 @@
 <template>
   <div class="app-container">
-<!--    题型选择按钮-->
+    <!--    题型选择按钮-->
     <div style="display: flex; width: 300px; justify-content: space-between; margin-bottom: 15px">
-      <el-button type="primary" plain :class="{active1: activeButton === 'choice'}" @click="activeTheChoice()">选择题</el-button>
-      <el-button type="success" plain :class="{active2: activeButton === 'tf'}" @click="activeTheTf()">判断题</el-button>
-      <el-button type="warning" plain :class="{active3: activeButton === 'sub'}" @click="activeTheSub()">主观题</el-button>
+      <el-button type="primary" plain :class="{active1: activeButton === 'choice'}" @click="activeTheChoice()">选择题
+      </el-button>
+      <el-button type="success" plain :class="{active2: activeButton === 'tf'}" @click="activeTheTf()">判断题
+      </el-button>
+      <el-button type="warning" plain :class="{active3: activeButton === 'sub'}" @click="activeTheSub()">主观题
+      </el-button>
     </div>
-<!--    题目列表-->
+    <!--    语文题目列表-->
     <div class="chinese" v-if="paperSubject === '语文'">
       <div class="choice" v-if="activeButton === 'choice'">
-        <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+        <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch"
+                 label-width="68px">
           <el-form-item label="题目编号" prop="questionId">
             <el-input
               v-model="queryParams.questionId"
@@ -36,9 +40,9 @@
 
 
         <el-table v-loading="loading" :data="chineseChoiceList" @selection-change="handleSelectionChange">
-          <el-table-column type="selection" width="55" align="center" />
-          <el-table-column label="题目编号" align="center" prop="questionId" />
-          <el-table-column label="题干" align="center" prop="content" />
+          <el-table-column type="selection" width="55" align="center"/>
+          <el-table-column label="题目编号" align="center" prop="questionId"/>
+          <el-table-column label="题干" align="center" prop="content"/>
           <el-table-column label="题型" align="center" prop="type">
             <template slot-scope="scope">
               <dict-tag :options="dict.type.choice_type" :value="scope.row.type"/>
@@ -52,14 +56,16 @@
                 icon="el-icon-plus"
                 @click="addQues(scope.row)"
                 v-hasPermi="['chinese:chineseChoice:edit']"
-              >添加</el-button>
+              >添加
+              </el-button>
               <el-button
                 size="mini"
                 type="text"
                 icon="el-icon-zoom-in"
                 @click="checkChoiceClearly(scope.row)"
                 v-hasPermi="['chinese:chineseChoice:remove']"
-              >查看</el-button>
+              >查看
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -73,7 +79,8 @@
         />
       </div>
       <div class="tf" v-if="activeButton === 'tf'">
-        <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+        <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch"
+                 label-width="68px">
           <el-form-item label="题目编号" prop="questionId">
             <el-input
               v-model="queryParams.questionId"
@@ -88,9 +95,9 @@
           </el-form-item>
         </el-form>
         <el-table v-loading="loading" :data="chineseTfList" @selection-change="handleSelectionChange">
-          <el-table-column type="selection" width="55" align="center" />
-          <el-table-column label="题目编号" align="center" prop="questionId" />
-          <el-table-column label="题干" align="center" prop="content" />
+          <el-table-column type="selection" width="55" align="center"/>
+          <el-table-column label="题目编号" align="center" prop="questionId"/>
+          <el-table-column label="题干" align="center" prop="content"/>
           <el-table-column label="答案" align="center" prop="answer">
             <template slot-scope="scope">
               <dict-tag :options="dict.type.tf_answer" :value="scope.row.answer"/>
@@ -104,14 +111,16 @@
                 icon="el-icon-plus"
                 @click="addQues(scope.row)"
                 v-hasPermi="['chinese:chineseChoice:edit']"
-              >添加</el-button>
+              >添加
+              </el-button>
               <el-button
                 size="mini"
                 type="text"
                 icon="el-icon-zoom-in"
                 @click="checkTfClearly(scope.row)"
                 v-hasPermi="['chinese:chineseChoice:remove']"
-              >查看</el-button>
+              >查看
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -124,7 +133,8 @@
         />
       </div>
       <div class="sub" v-if="activeButton === 'sub'">
-        <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+        <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch"
+                 label-width="68px">
           <el-form-item label="题目编号" prop="questionId">
             <el-input
               v-model="queryParams.questionId"
@@ -139,9 +149,9 @@
           </el-form-item>
         </el-form>
         <el-table v-loading="loading" :data="chineseSubList" @selection-change="handleSelectionChange">
-          <el-table-column type="selection" width="55" align="center" />
-          <el-table-column label="题目编号" align="center" prop="questionId" />
-          <el-table-column label="题干" align="center" prop="content" />
+          <el-table-column type="selection" width="55" align="center"/>
+          <el-table-column label="题目编号" align="center" prop="questionId"/>
+          <el-table-column label="题干" align="center" prop="content"/>
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
             <template slot-scope="scope">
               <el-button
@@ -150,14 +160,16 @@
                 icon="el-icon-plus"
                 @click="addQues(scope.row)"
                 v-hasPermi="['chinese:chineseChoice:edit']"
-              >添加</el-button>
+              >添加
+              </el-button>
               <el-button
                 size="mini"
                 type="text"
                 icon="el-icon-zoom-in"
                 @click="checkSubClearly(scope.row)"
                 v-hasPermi="['chinese:chineseChoice:remove']"
-              >查看</el-button>
+              >查看
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -170,10 +182,11 @@
         />
       </div>
     </div>
-
+    <!--    数学题目列表-->
     <div class="math" v-if="paperSubject === '数学'">
       <div class="choice" v-if="activeButton === 'choice'">
-        <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+        <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch"
+                 label-width="68px">
           <el-form-item label="题目编号" prop="questionId">
             <el-input
               v-model="queryParams.questionId"
@@ -198,9 +211,9 @@
           </el-form-item>
         </el-form>
         <el-table v-loading="loading" :data="mathChoiceList" @selection-change="handleSelectionChange">
-          <el-table-column type="selection" width="55" align="center" />
-          <el-table-column label="题目编号" align="center" prop="questionId" />
-          <el-table-column label="题干" align="center" prop="content" />
+          <el-table-column type="selection" width="55" align="center"/>
+          <el-table-column label="题目编号" align="center" prop="questionId"/>
+          <el-table-column label="题干" align="center" prop="content"/>
           <el-table-column label="题型" align="center" prop="type">
             <template slot-scope="scope">
               <dict-tag :options="dict.type.choice_type" :value="scope.row.type"/>
@@ -214,14 +227,16 @@
                 icon="el-icon-plus"
                 @click="addQues(scope.row)"
                 v-hasPermi="['chinese:chineseChoice:edit']"
-              >添加</el-button>
+              >添加
+              </el-button>
               <el-button
                 size="mini"
                 type="text"
                 icon="el-icon-zoom-in"
                 @click="checkChoiceClearly(scope.row)"
                 v-hasPermi="['chinese:chineseChoice:remove']"
-              >查看</el-button>
+              >查看
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -234,7 +249,8 @@
         />
       </div>
       <div class="tf" v-if="activeButton === 'tf'">
-        <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+        <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch"
+                 label-width="68px">
           <el-form-item label="题目编号" prop="questionId">
             <el-input
               v-model="queryParams.questionId"
@@ -249,9 +265,9 @@
           </el-form-item>
         </el-form>
         <el-table v-loading="loading" :data="mathTfList" @selection-change="handleSelectionChange">
-          <el-table-column type="selection" width="55" align="center" />
-          <el-table-column label="题目编号" align="center" prop="questionId" />
-          <el-table-column label="题干" align="center" prop="content" />
+          <el-table-column type="selection" width="55" align="center"/>
+          <el-table-column label="题目编号" align="center" prop="questionId"/>
+          <el-table-column label="题干" align="center" prop="content"/>
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
             <template slot-scope="scope">
               <el-button
@@ -260,14 +276,16 @@
                 icon="el-icon-plus"
                 @click="addQues(scope.row)"
                 v-hasPermi="['chinese:chineseChoice:edit']"
-              >添加</el-button>
+              >添加
+              </el-button>
               <el-button
                 size="mini"
                 type="text"
                 icon="el-icon-zoom-in"
                 @click="checkTfClearly(scope.row)"
                 v-hasPermi="['chinese:chineseChoice:remove']"
-              >查看</el-button>
+              >查看
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -280,7 +298,8 @@
         />
       </div>
       <div class="sub" v-if="activeButton === 'sub'">
-        <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+        <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch"
+                 label-width="68px">
           <el-form-item label="题目编号" prop="questionId">
             <el-input
               v-model="queryParams.questionId"
@@ -295,9 +314,9 @@
           </el-form-item>
         </el-form>
         <el-table v-loading="loading" :data="mathSubList" @selection-change="handleSelectionChange">
-          <el-table-column type="selection" width="55" align="center" />
-          <el-table-column label="题目编号" align="center" prop="questionId" />
-          <el-table-column label="题干" align="center" prop="content" />
+          <el-table-column type="selection" width="55" align="center"/>
+          <el-table-column label="题目编号" align="center" prop="questionId"/>
+          <el-table-column label="题干" align="center" prop="content"/>
           <el-table-column label="答案" align="center" prop="answer">
             <template slot-scope="scope">
               <dict-tag :options="dict.type.tf_answer" :value="scope.row.answer"/>
@@ -311,14 +330,16 @@
                 icon="el-icon-plus"
                 @click="addQues(scope.row)"
                 v-hasPermi="['chinese:chineseChoice:edit']"
-              >添加</el-button>
+              >添加
+              </el-button>
               <el-button
                 size="mini"
                 type="text"
                 icon="el-icon-zoom-in"
                 @click="checkSubClearly(scope.row)"
                 v-hasPermi="['chinese:chineseChoice:remove']"
-              >查看</el-button>
+              >查看
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -331,10 +352,11 @@
         />
       </div>
     </div>
-
+    <!--    英语题目列表-->
     <div class="english" v-if="paperSubject === '英语'">
       <div class="choice" v-if="activeButton === 'choice'">
-        <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+        <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch"
+                 label-width="68px">
           <el-form-item label="题目编号" prop="questionId">
             <el-input
               v-model="queryParams.questionId"
@@ -359,9 +381,9 @@
           </el-form-item>
         </el-form>
         <el-table v-loading="loading" :data="englishChoiceList" @selection-change="handleSelectionChange">
-          <el-table-column type="selection" width="55" align="center" />
-          <el-table-column label="题目编号" align="center" prop="questionId" />
-          <el-table-column label="题干" align="center" prop="content" />
+          <el-table-column type="selection" width="55" align="center"/>
+          <el-table-column label="题目编号" align="center" prop="questionId"/>
+          <el-table-column label="题干" align="center" prop="content"/>
           <el-table-column label="题型" align="center" prop="type">
             <template slot-scope="scope">
               <dict-tag :options="dict.type.choice_type" :value="scope.row.type"/>
@@ -375,14 +397,16 @@
                 icon="el-icon-plus"
                 @click="addQues(scope.row)"
                 v-hasPermi="['chinese:chineseChoice:edit']"
-              >添加</el-button>
+              >添加
+              </el-button>
               <el-button
                 size="mini"
                 type="text"
                 icon="el-icon-zoom-in"
                 @click="checkChoiceClearly(scope.row)"
                 v-hasPermi="['chinese:chineseChoice:remove']"
-              >查看</el-button>
+              >查看
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -395,7 +419,8 @@
         />
       </div>
       <div class="tf" v-if="activeButton === 'tf'">
-        <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+        <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch"
+                 label-width="68px">
           <el-form-item label="题目编号" prop="questionId">
             <el-input
               v-model="queryParams.questionId"
@@ -410,9 +435,9 @@
           </el-form-item>
         </el-form>
         <el-table v-loading="loading" :data="englishTfList" @selection-change="handleSelectionChange">
-          <el-table-column type="selection" width="55" align="center" />
-          <el-table-column label="题目编号" align="center" prop="questionId" />
-          <el-table-column label="题干" align="center" prop="content" />
+          <el-table-column type="selection" width="55" align="center"/>
+          <el-table-column label="题目编号" align="center" prop="questionId"/>
+          <el-table-column label="题干" align="center" prop="content"/>
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
             <template slot-scope="scope">
               <el-button
@@ -421,14 +446,16 @@
                 icon="el-icon-plus"
                 @click="addQues(scope.row)"
                 v-hasPermi="['chinese:chineseChoice:edit']"
-              >添加</el-button>
+              >添加
+              </el-button>
               <el-button
                 size="mini"
                 type="text"
                 icon="el-icon-zoom-in"
                 @click="checkTfClearly(scope.row)"
                 v-hasPermi="['chinese:chineseChoice:remove']"
-              >查看</el-button>
+              >查看
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -441,7 +468,8 @@
         />
       </div>
       <div class="sub" v-if="activeButton === 'sub'">
-        <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+        <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch"
+                 label-width="68px">
           <el-form-item label="题目编号" prop="questionId">
             <el-input
               v-model="queryParams.questionId"
@@ -456,9 +484,9 @@
           </el-form-item>
         </el-form>
         <el-table v-loading="loading" :data="englishSubList" @selection-change="handleSelectionChange">
-          <el-table-column type="selection" width="55" align="center" />
-          <el-table-column label="题目编号" align="center" prop="questionId" />
-          <el-table-column label="题干" align="center" prop="content" />
+          <el-table-column type="selection" width="55" align="center"/>
+          <el-table-column label="题目编号" align="center" prop="questionId"/>
+          <el-table-column label="题干" align="center" prop="content"/>
           <el-table-column label="答案" align="center" prop="answer">
             <template slot-scope="scope">
               <dict-tag :options="dict.type.tf_answer" :value="scope.row.answer"/>
@@ -472,14 +500,16 @@
                 icon="el-icon-plus"
                 @click="addQues(scope.row)"
                 v-hasPermi="['chinese:chineseChoice:edit']"
-              >添加</el-button>
+              >添加
+              </el-button>
               <el-button
                 size="mini"
                 type="text"
                 icon="el-icon-zoom-in"
                 @click="checkSubClearly(scope.row)"
                 v-hasPermi="['chinese:chineseChoice:remove']"
-              >查看</el-button>
+              >查看
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -494,7 +524,7 @@
     </div>
 
     <!-- 查看选择题对话框 -->
-    <el-dialog :title="title" :visible.sync="open && this.activeButton === 'choice'" width="500px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open && this.activeButton === 'choice'" width="500px" append-to-body :show-close="false">
       <el-form ref="form" :model="form" label-width="80px">
         <el-form-item label="题目编号">
           <el-input v-model="form.questionId" readonly/>
@@ -524,7 +554,7 @@
     </el-dialog>
 
     <!-- 查看判断题对话框 -->
-    <el-dialog :title="title" :visible.sync="open && this.activeButton === 'tf'" width="500px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open && this.activeButton === 'tf'" width="500px" append-to-body :show-close="false">
       <el-form ref="form" :model="form" label-width="80px">
         <el-form-item label="题目编号">
           <el-input v-model="form.questionId" readonly/>
@@ -548,7 +578,7 @@
     </el-dialog>
 
     <!-- 查看主观题对话框 -->
-    <el-dialog :title="title" :visible.sync="open && this.activeButton === 'sub'" width="500px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open && this.activeButton === 'sub'" width="500px" append-to-body :show-close="false">
       <el-form ref="form" :model="form" label-width="80px">
         <el-form-item label="题目编号">
           <el-input v-model="form.questionId" readonly/>
@@ -565,18 +595,38 @@
       </div>
     </el-dialog>
 
+    <!--    查看已选题目-->
+    <el-dialog title="已选题目" :visible.sync="checkSelected" width="600px" :show-close="false">
+      <el-table :data="selected">
+        <el-table-column property="questionId" label="题目编号" width="150"></el-table-column>
+        <el-table-column property="content" label="题干内容" width="300"></el-table-column>
+        <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-delete"
+              @click="deleteSelected(scope.row)"
+              v-hasPermi="['chinese:chineseChoice:edit']"
+            >删除
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
+    <!--列表下的显示-->
     <div class="listBottom">
       <div style="display: flex">
         <div class="choiceCount">
-          <span>选择题:</span>
+          <span @click="showSelectedChoice">选择题:</span>
           <el-input readonly v-model="choiceCount"></el-input>
         </div>
         <div class="tfCount">
-          <span>判断题:</span>
+          <span @click="showSelectedTf">判断题:</span>
           <el-input readonly v-model="tfCount"></el-input>
         </div>
         <div class="subCount">
-          <span>主观题:</span>
+          <span @click="showSelectedSub">主观题:</span>
           <el-input readonly v-model="subCount"></el-input>
         </div>
       </div>
@@ -590,39 +640,49 @@
 </template>
 
 <script>
-import { listChineseChoice } from "@/api/chinese/chineseChoice";
-import { listChineseTf } from "@/api/chinese/chineseTf";
-import { listChineseSub } from "@/api/chinese/chineseSub";
-import { getChineseChoice } from "@/api/chinese/chineseChoice";
-import { getChineseTf } from "@/api/chinese/chineseTf";
-import { getChineseSub } from "@/api/chinese/chineseSub";
-import { listMathChoice } from "@/api/math/mathChoice";
-import { listMathTf } from "@/api/math/mathTf";
-import { listMathSub } from "@/api/math/mathSub";
-import { getMathChoice } from "@/api/math/mathChoice";
-import { getMathTf } from "@/api/math/mathTf";
-import { getMathSub } from "@/api/math/mathSub";
-import { listEnglishChoice } from "@/api/english/englishChoice";
-import { listEnglishTf } from "@/api/english/englishTf";
-import { listEnglishSub } from "@/api/english/englishSub";
-import { getEnglishChoice } from "@/api/english/englishChoice";
-import { getEnglishTf } from "@/api/english/englishTf";
-import { getEnglishSub } from "@/api/english/englishSub";
+import {listChineseChoice} from "@/api/chinese/chineseChoice";
+import {listChineseTf} from "@/api/chinese/chineseTf";
+import {listChineseSub} from "@/api/chinese/chineseSub";
+import {getChineseChoice} from "@/api/chinese/chineseChoice";
+import {getChineseTf} from "@/api/chinese/chineseTf";
+import {getChineseSub} from "@/api/chinese/chineseSub";
+import {listMathChoice} from "@/api/math/mathChoice";
+import {listMathTf} from "@/api/math/mathTf";
+import {listMathSub} from "@/api/math/mathSub";
+import {getMathChoice} from "@/api/math/mathChoice";
+import {getMathTf} from "@/api/math/mathTf";
+import {getMathSub} from "@/api/math/mathSub";
+import {listEnglishChoice} from "@/api/english/englishChoice";
+import {listEnglishTf} from "@/api/english/englishTf";
+import {listEnglishSub} from "@/api/english/englishSub";
+import {getEnglishChoice} from "@/api/english/englishChoice";
+import {getEnglishTf} from "@/api/english/englishTf";
+import {getEnglishSub} from "@/api/english/englishSub";
 
 export default {
   name: "formPaper",
-  dicts: ['choice_answer', 'choice_type','tf_answer'],
+  dicts: ['choice_answer', 'choice_type', 'tf_answer'],
   data() {
     return {
-      form:{},
+      // 查看已选题的当前题型
+      selectedButton: 'choice',
+      // 已选题目
+      selected: [],
+      checkSelected: false,
+      form: {},
+      // 试卷编号
       paperId: this.$route.query.id,
       paperName: this.$route.query.name,
+      // 试卷科目
       paperSubject: this.$route.query.subject,
+      //已选题目
       addRows: [],
+      //当前列表展示题目的题型
       activeButton: 'choice',
-      choiceCount:0,
-      tfCount:0,
-      subCount:0,
+      // 该题型题目数量
+      choiceCount: 0,
+      tfCount: 0,
+      subCount: 0,
       // 遮罩层
       loading: true,
       // 选中数组
@@ -667,35 +727,106 @@ export default {
       },
     };
   },
+  // 初始界面展示选择题题目列表
   created() {
-    if (this.paperSubject === '语文'){
+    if (this.paperSubject === '语文') {
       this.getChineseChoiceList();
-    }else if (this.paperSubject === '数学'){
+    } else if (this.paperSubject === '数学') {
       this.getMathChoiceList();
-    }else{
+    } else {
       this.getEnglishChoiceList();
     }
-
   },
   methods: {
-    sure(){
+    //删除已选题目
+    deleteSelected(row) {
+      const rowIndex = this.selected.indexOf(row);
+      if (rowIndex !== -1) {
+        if (confirm('确认删除该题目吗?')) {
+          this.selected.splice(rowIndex, 1);
+          this.addRows.splice(rowIndex, 1);
+          if (this.selectedButton === 'choice') {
+            this.choiceCount--;
+          } else if (this.selectedButton === 'tf') {
+            this.tfCount--;
+          } else {
+            this.subCount--;
+          }
+        } else {
+        }
+      }
+      if (this.selected.length === 0) {
+        this.checkSelected = false;
+      }
+    },
+    //显示已选选择题
+    showSelectedChoice() {
+      this.selectedButton = 'choice';
+      const addRows = this.addRows;
+      if (this.paperSubject === '语文') {
+        this.selected = this.chineseChoiceList.filter(item => addRows.includes(item));
+        this.checkSelected = true;
+      }
+      if (this.paperSubject === '数学') {
+        this.selected = this.mathChoiceList.filter(item => addRows.includes(item));
+        this.checkSelected = true;
+      }
+      if (this.paperSubject === '英语') {
+        this.selected = this.englishChoiceList.filter(item => addRows.includes(item));
+        this.checkSelected = true;
+      }
+    },
+    showSelectedTf() {
+      this.selectedButton = 'tf';
+      const addRows = this.addRows;
+      if (this.paperSubject === '语文') {
+        this.selected = this.chineseTfList.filter(item => addRows.includes(item));
+        this.checkSelected = true;
+      }
+      if (this.paperSubject === '数学') {
+        this.selected = this.mathTfList.filter(item => addRows.includes(item));
+        this.checkSelected = true;
+      }
+      if (this.paperSubject === '英语') {
+        this.selected = this.englishTfList.filter(item => addRows.includes(item));
+        this.checkSelected = true;
+      }
+    },
+    showSelectedSub() {
+      this.selectedButton = 'sub'
+      const addRows = this.addRows;
+      if (this.paperSubject === '语文') {
+        this.selected = this.chineseSubList.filter(item => addRows.includes(item));
+        this.checkSelected = true;
+      }
+      if (this.paperSubject === '数学') {
+        this.selected = this.mathSubList.filter(item => addRows.includes(item));
+        this.checkSelected = true;
+      }
+      if (this.paperSubject === '英语') {
+        this.selected = this.englishSubList.filter(item => addRows.includes(item));
+        this.checkSelected = true;
+      }
+    },
+    sure() {
       this.open = false;
     },
-    checkChoiceClearly(row){
+    //查看选择题详情
+    checkChoiceClearly(row) {
       const quesId = row.questionId;
-      if (this.$route.query.subject === '语文'){
+      if (this.$route.query.subject === '语文') {
         getChineseChoice(quesId).then(response => {
           this.form = response.data;
           this.open = true;
           this.title = '详情';
         });
-      }else if (this.$route.query.subject === '数学'){
+      } else if (this.$route.query.subject === '数学') {
         getMathChoice(quesId).then(response => {
           this.form = response.data;
           this.open = true;
           this.title = '详情';
         });
-      }else{
+      } else {
         getEnglishChoice(quesId).then(response => {
           this.form = response.data;
           this.open = true;
@@ -703,21 +834,21 @@ export default {
         });
       }
     },
-    checkTfClearly(row){
+    checkTfClearly(row) {
       const quesId = row.questionId;
-      if (this.$route.query.subject === '语文'){
+      if (this.$route.query.subject === '语文') {
         getChineseTf(quesId).then(response => {
           this.form = response.data;
           this.open = true;
           this.title = '详情';
         });
-      }else if (this.$route.query.subject === '数学'){
+      } else if (this.$route.query.subject === '数学') {
         getMathTf(quesId).then(response => {
           this.form = response.data;
           this.open = true;
           this.title = '详情';
         });
-      }else{
+      } else {
         getEnglishTf(quesId).then(response => {
           this.form = response.data;
           this.open = true;
@@ -725,21 +856,21 @@ export default {
         });
       }
     },
-    checkSubClearly(row){
+    checkSubClearly(row) {
       const quesId = row.questionId;
-      if (this.$route.query.subject === '语文'){
+      if (this.$route.query.subject === '语文') {
         getChineseSub(quesId).then(response => {
           this.form = response.data;
           this.open = true;
           this.title = '详情';
         });
-      }else if (this.$route.query.subject === '数学'){
+      } else if (this.$route.query.subject === '数学') {
         getMathSub(quesId).then(response => {
           this.form = response.data;
           this.open = true;
           this.title = '详情';
         });
-      }else{
+      } else {
         getEnglishSub(quesId).then(response => {
           this.form = response.data;
           this.open = true;
@@ -747,61 +878,91 @@ export default {
         });
       }
     },
-    resetThePaper(){
+    //清空已选
+    resetThePaper() {
       this.addRows = [];
       this.choiceCount = 0;
       this.tfCount = 0;
       this.subCount = 0;
     },
-    addQues(row){
-      if (this.addRows.includes(row)){
+    //添加题目到试卷
+    addQues(row) {
+      if (this.addRows.includes(row)) {
         this.$message.error('该题目已添加!');
         return;
       }
       this.addRows.push(row);
-      if (this.activeButton === 'choice'){
-        this.choiceCount ++;
-      }else if (this.activeButton === 'tf'){
-        this.tfCount ++;
-      }else {
-        this.subCount ++;
+      if (this.activeButton === 'choice') {
+        this.choiceCount++;
+      } else if (this.activeButton === 'tf') {
+        this.tfCount++;
+      } else {
+        this.subCount++;
       }
       this.$message({
         message: '添加成功!',
         type: 'success'
       });
     },
-    activeTheChoice(){
+    //切换查询题目列表类型
+    activeTheChoice() {
       this.activeButton = 'choice';
       this.queryParams.pageNum = 1;
-      if (this.paperSubject === '语文'){
+      if (this.paperSubject === '语文') {
         this.getChineseChoiceList();
-      }else if (this.paperSubject === '数学'){
+      } else if (this.paperSubject === '数学') {
         this.getMathChoiceList();
-      }else{
+      } else {
         this.getEnglishChoiceList();
       }
     },
-    activeTheTf(){
+    activeTheTf() {
       this.activeButton = 'tf';
       this.queryParams.pageNum = 1;
-      if (this.paperSubject === '语文'){
+      if (this.paperSubject === '语文') {
         this.getChineseTfList();
-      }else if (this.paperSubject === '数学'){
+      } else if (this.paperSubject === '数学') {
         this.getMathTfList();
-      }else{
+      } else {
         this.getEnglishTfList();
       }
     },
-    activeTheSub(){
+    activeTheSub() {
       this.activeButton = 'sub';
       this.queryParams.pageNum = 1;
-      if (this.paperSubject === '语文'){
+      if (this.paperSubject === '语文') {
         this.getChineseSubList();
-      }else if (this.paperSubject === '数学'){
+      } else if (this.paperSubject === '数学') {
         this.getMathSubList();
-      }else{
+      } else {
         this.getEnglishSubList();
+      }
+    },
+    getList(){
+      if (this.paperSubject === '语文'){
+        if (this.activeButton === 'choice'){
+          this.getChineseChoiceList();
+        }else if (this.activeButton === 'tf'){
+          this.getChineseTfList();
+        }else {
+          this.getChineseSubList();
+        }
+      }else if (this.paperSubject === '数学'){
+        if (this.activeButton === 'choice'){
+          this.getMathChoiceList();
+        }else if (this.activeButton === 'tf'){
+          this.getMathTfList();
+        }else {
+          this.getMathSubList();
+        }
+      }else {
+        if (this.activeButton === 'choice'){
+          this.getEnglishChoiceList();
+        }else if (this.activeButton === 'tf'){
+          this.getEnglishTfList();
+        }else {
+          this.getEnglishSubList();
+        }
       }
     },
     /** 查询语文选择题列表 */
@@ -898,7 +1059,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.questionId)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     }
   }
@@ -922,23 +1083,28 @@ export default {
   font-size: 25px;
 }
 
-.choiceCount,.tfCount,.subCount {
+.listBottom span:hover {
+  color: rgb(24, 144, 255);
+  cursor: pointer;
+}
+
+.choiceCount, .tfCount, .subCount {
   display: flex;
   margin-right: 20px;
 }
 
 .active1 {
-  background-color: rgb(24,144,255);
+  background-color: rgb(24, 144, 255);
   color: white;
 }
 
 .active2 {
-  background-color: rgb(19,206,102);
+  background-color: rgb(19, 206, 102);
   color: white;
 }
 
 .active3 {
-  background-color: rgb(255,186,0);
+  background-color: rgb(255, 186, 0);
   color: white;
 }
 </style>
