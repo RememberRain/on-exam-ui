@@ -56,16 +56,16 @@
       <el-form-item label="开始时间" prop="startTime">
         <el-date-picker clearable
           v-model="queryParams.startTime"
-          type="date"
-          value-format="yyyy-MM-dd"
-          placeholder="请选择开始时间">
+          type="datetime"
+          value-format="yyyy-MM-dd hh:ii:ss"
+          placeholder="请选择考试开始时间">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间" prop="endTime">
         <el-date-picker clearable
           v-model="queryParams.endTime"
-          type="date"
-          value-format="yyyy-MM-dd"
+          type="datetime"
+          value-format="yyyy-MM-dd hh:ii:ss"
           placeholder="请选择结束时间">
         </el-date-picker>
       </el-form-item>
@@ -139,12 +139,12 @@
       <el-table-column label="工号" align="center" prop="createUserId" />
       <el-table-column label="开始时间" align="center" prop="startTime" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.startTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
+          <span>{{ parseTime(scope.row.startTime, '{yyyy}-{mm}-{dd} {hh}:{ii}:{ss}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="结束时间" align="center" prop="endTime" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.endTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
+          <span>{{ parseTime(scope.row.endTime, '{yyyy}-{mm}-{dd} {hh}:{ii}:{ss}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -200,17 +200,17 @@
         <el-form-item label="开始时间" prop="startTime">
           <el-date-picker clearable
             v-model="form.startTime"
-            type="date"
-            value-format="yyyy-MM-dd"
-            placeholder="请选择开始时间">
+            type="datetime"
+            value-format="yyyy-MM-dd HH:mm:ss"
+            placeholder="请选择考试开始时间">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="结束时间" prop="endTime">
           <el-date-picker clearable
             v-model="form.endTime"
-            type="date"
-            value-format="yyyy-MM-dd"
-            placeholder="请选择结束时间">
+            type="datetime"
+            value-format="yyyy-MM-dd HH:mm:ss"
+            placeholder="请选择考试结束时间">
           </el-date-picker>
         </el-form-item>
       </el-form>
@@ -224,12 +224,15 @@
 
 <script>
 import { listPaper, getPaper, delPaper, addPaper, updatePaper } from "@/api/paper/paper";
+import {parseTime} from "../../../utils/ruoyi";
 
 export default {
   name: "Paper",
   dicts: ['paper_status', 'subject'],
   data() {
     return {
+      value1: '',
+      value2: '',
       // 遮罩层
       loading: true,
       // 选中数组
@@ -262,7 +265,10 @@ export default {
         endTime: null
       },
       // 表单参数
-      form: {},
+      form: {
+        startTime: new Date(),
+        endTime: new Date()
+      },
       // 表单校验
       rules: {
         name: [
@@ -284,6 +290,7 @@ export default {
     this.getList();
   },
   methods: {
+    parseTime,
     /** 查询试卷管理列表 */
     getList() {
       this.loading = true;
@@ -349,6 +356,7 @@ export default {
     },
     /** 提交按钮 */
     submitForm() {
+      console.log(this.form.startTime,this.form.endTime)
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.paperId != null) {

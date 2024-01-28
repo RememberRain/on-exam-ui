@@ -633,7 +633,7 @@
       <div>
         <el-button type="primary" @click="resetThePaper()">重置</el-button>
         <el-button type="primary">预览</el-button>
-        <el-button type="primary">组卷</el-button>
+        <el-button type="primary" @click="formPaper()">组卷</el-button>
       </div>
     </div>
   </div>
@@ -658,6 +658,7 @@ import {listEnglishSub} from "@/api/english/englishSub";
 import {getEnglishChoice} from "@/api/english/englishChoice";
 import {getEnglishTf} from "@/api/english/englishTf";
 import {getEnglishSub} from "@/api/english/englishSub";
+import { addChoiceFormPaper,addSubFormPaper, addTfFormPaper} from "@/api/formPaper/formPaper";
 
 export default {
   name: "formPaper",
@@ -738,6 +739,40 @@ export default {
     }
   },
   methods: {
+    //加入题目进入试卷
+    formPaper(){
+      if (confirm('确认进行组卷吗?')){
+        if (this.addRows.length === 0){
+          this.$message.error("请选择题目进行组卷!");
+        } else if (this.addRows.length < 5 && this.addRows.length > 0){
+          this.$message.error("请至少选择5道题目进行组卷")
+        } else {
+          for (let i = 0; i < this.addRows.length; i ++){
+            if (Object.keys(this.addRows[i]).length === 13){
+              addChoiceFormPaper({
+                paperId: this.paperId,
+                questionId: this.addRows[i].questionId
+              })
+            }else if (Object.keys(this.addRows[i]).length === 10){
+              addTfFormPaper({
+                paperId: this.paperId,
+                questionId: this.addRows[i].questionId
+              })
+            }else{
+              addSubFormPaper({
+                paperId: this.paperId,
+                questionId: this.addRows[i].questionId
+              })
+            }
+          }
+          this.$message({
+            message: '组卷成功!',
+            type: "success"
+          })
+          this.$router.push('/paper/paper');
+        }
+      }
+    },
     //删除已选题目
     deleteSelected(row) {
       const rowIndex = this.selected.indexOf(row);
@@ -887,17 +922,19 @@ export default {
     },
     //添加题目到试卷
     addQues(row) {
+      let that = this;
       if (this.addRows.includes(row)) {
         this.$message.error('该题目已添加!');
         return;
       }
       this.addRows.push(row);
       if (this.activeButton === 'choice') {
-        this.choiceCount++;
+            that.choiceCount ++;
+
       } else if (this.activeButton === 'tf') {
-        this.tfCount++;
+            that.tfCount ++;
       } else {
-        this.subCount++;
+            that.subCount ++;
       }
       this.$message({
         message: '添加成功!',
