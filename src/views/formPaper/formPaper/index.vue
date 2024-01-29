@@ -38,7 +38,6 @@
           </el-form-item>
         </el-form>
 
-
         <el-table v-loading="loading" :data="chineseChoiceList" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="55" align="center"/>
           <el-table-column label="题目编号" align="center" prop="questionId"/>
@@ -595,6 +594,20 @@
       </div>
     </el-dialog>
 
+<!--    预览功能对话框-->
+    <el-dialog :title="this.paperName" :visible.sync="isPreview" width="1000px"append-to-body :show-close="false">
+      <el-container v-if="this.isPreview">
+        <el-aside width="300px">
+          <div v-if="this.selectedChoice.length > 0">选择题</div>
+          <el-button type="primary" circle v-for="(item, index) in selectedChoice" :key="index">{{ index + 1 }}</el-button>
+          <div v-if="this.selectedTf.length > 0">判断题</div>
+          <el-button type="primary" circle v-for="(item, index) in selectedTf" :key="index">{{ index + 1 }}</el-button>
+          <div v-if="this.selectedSub.length > 0">主观题</div>
+          <el-button type="primary" circle v-for="(item, index) in selectedSub" :key="index">{{ index + 1 }}</el-button>
+        </el-aside>
+        <el-main></el-main>
+      </el-container>
+    </el-dialog>
     <!--    查看已选题目-->
     <el-dialog title="已选题目" :visible.sync="checkSelected" width="600px" :show-close="false">
       <el-table :data="selected">
@@ -632,7 +645,7 @@
       </div>
       <div>
         <el-button type="primary" @click="resetThePaper()">重置</el-button>
-        <el-button type="primary">预览</el-button>
+        <el-button type="primary" @click="preview()">预览</el-button>
         <el-button type="primary" @click="formPaper()">组卷</el-button>
       </div>
     </div>
@@ -665,10 +678,14 @@ export default {
   dicts: ['choice_answer', 'choice_type', 'tf_answer'],
   data() {
     return {
+      isPreview: false,
       // 查看已选题的当前题型
       selectedButton: 'choice',
       // 已选题目
       selected: [],
+      selectedChoice: [],
+      selectedTf: [],
+      selectedSub: [],
       checkSelected: false,
       form: {},
       // 试卷编号
@@ -739,6 +756,14 @@ export default {
     }
   },
   methods: {
+    //预览功能
+    preview(){
+      if (this.addRows.length !== 0){
+        this.isPreview = true;
+      }else {
+        this.$message.error('请先选择题目!');
+      }
+    },
     //加入题目进入试卷
     formPaper(){
       if (confirm('确认进行组卷吗?')){
@@ -776,10 +801,18 @@ export default {
     //删除已选题目
     deleteSelected(row) {
       const rowIndex = this.selected.indexOf(row);
+      const addRowIndex = this.addRows.indexOf(row);
       if (rowIndex !== -1) {
         if (confirm('确认删除该题目吗?')) {
           this.selected.splice(rowIndex, 1);
-          this.addRows.splice(rowIndex, 1);
+          if (this.selectedButton === 'choice'){
+            this.selectedChoice.splice(rowIndex,1);
+          }else if (this.selectedButton === 'tf'){
+            this.selectedTf.splice(rowIndex,1);
+          } else {
+            this.selectedSub.splice(rowIndex,1);
+          }
+          this.addRows.splice(addRowIndex, 1);
           if (this.selectedButton === 'choice') {
             this.choiceCount--;
           } else if (this.selectedButton === 'tf') {
@@ -800,48 +833,42 @@ export default {
       const addRows = this.addRows;
       if (this.paperSubject === '语文') {
         this.selected = this.chineseChoiceList.filter(item => addRows.includes(item));
-        this.checkSelected = true;
       }
       if (this.paperSubject === '数学') {
         this.selected = this.mathChoiceList.filter(item => addRows.includes(item));
-        this.checkSelected = true;
       }
       if (this.paperSubject === '英语') {
         this.selected = this.englishChoiceList.filter(item => addRows.includes(item));
-        this.checkSelected = true;
       }
+      this.checkSelected = true;
     },
     showSelectedTf() {
       this.selectedButton = 'tf';
       const addRows = this.addRows;
       if (this.paperSubject === '语文') {
         this.selected = this.chineseTfList.filter(item => addRows.includes(item));
-        this.checkSelected = true;
       }
       if (this.paperSubject === '数学') {
         this.selected = this.mathTfList.filter(item => addRows.includes(item));
-        this.checkSelected = true;
       }
       if (this.paperSubject === '英语') {
         this.selected = this.englishTfList.filter(item => addRows.includes(item));
-        this.checkSelected = true;
       }
+      this.checkSelected = true;
     },
     showSelectedSub() {
       this.selectedButton = 'sub'
       const addRows = this.addRows;
       if (this.paperSubject === '语文') {
         this.selected = this.chineseSubList.filter(item => addRows.includes(item));
-        this.checkSelected = true;
       }
       if (this.paperSubject === '数学') {
         this.selected = this.mathSubList.filter(item => addRows.includes(item));
-        this.checkSelected = true;
       }
       if (this.paperSubject === '英语') {
         this.selected = this.englishSubList.filter(item => addRows.includes(item));
-        this.checkSelected = true;
       }
+      this.checkSelected = true;
     },
     sure() {
       this.open = false;
@@ -915,10 +942,16 @@ export default {
     },
     //清空已选
     resetThePaper() {
-      this.addRows = [];
-      this.choiceCount = 0;
-      this.tfCount = 0;
-      this.subCount = 0;
+      if (confirm("确认重置?所有选择的题目将清空")){
+        this.addRows = [];
+        this.choiceCount = 0;
+        this.tfCount = 0;
+        this.subCount = 0;
+        this.selectedChoice = [];
+        this.selectedTf = [];
+        this.selectedSub = [];
+        this.$message.success('重置成功!');
+      }
     },
     //添加题目到试卷
     addQues(row) {
@@ -930,11 +963,37 @@ export default {
       this.addRows.push(row);
       if (this.activeButton === 'choice') {
             that.choiceCount ++;
-
+        if (this.paperSubject === '语文') {
+          this.selectedChoice = this.chineseChoiceList.filter(item => this.addRows.includes(item));
+        }
+        if (this.paperSubject === '数学') {
+          this.selectedChoice = this.mathChoiceList.filter(item => this.addRows.includes(item));
+        }
+        if (this.paperSubject === '英语') {
+          this.selectedChoice = this.englishChoiceList.filter(item => this.addRows.includes(item));
+        }
       } else if (this.activeButton === 'tf') {
             that.tfCount ++;
+        if (this.paperSubject === '语文') {
+          this.selectedTf = this.chineseTfList.filter(item => this.addRows.includes(item));
+        }
+        if (this.paperSubject === '数学') {
+          this.selectedTf = this.mathTfList.filter(item => this.addRows.includes(item));
+        }
+        if (this.paperSubject === '英语') {
+          this.selectedTf = this.englishTfList.filter(item => this.addRows.includes(item));
+        }
       } else {
             that.subCount ++;
+        if (this.paperSubject === '语文') {
+          this.selectedSub = this.chineseSubList.filter(item => this.addRows.includes(item));
+        }
+        if (this.paperSubject === '数学') {
+          this.selectedSub = this.mathSubList.filter(item => this.addRows.includes(item));
+        }
+        if (this.paperSubject === '英语') {
+          this.selectedSub = this.englishSubList.filter(item => this.addRows.includes(item));
+        }
       }
       this.$message({
         message: '添加成功!',
@@ -1107,8 +1166,7 @@ export default {
 .listBottom {
   justify-content: space-between;
   display: -webkit-box;
-  position: absolute;
-  bottom: 20px;
+  margin-top: 40px;
   white-space: nowrap;
   display: -ms-flexbox;
   display: flex;
@@ -1158,6 +1216,13 @@ export default {
   font-weight: bolder;
   color: black;
   border: none;
+}
+
+.el-button--medium.is-circle {
+  padding: 10px;
+  width: 35px;
+  height: 35px;
+  margin: 6px;
 }
 </style>
 
