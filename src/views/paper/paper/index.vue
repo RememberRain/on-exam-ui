@@ -157,6 +157,7 @@
             v-hasPermi="['paper:paper:edit']"
           >修改</el-button>
           <el-button
+            v-if="scope.row.status === '待组卷'"
             size="mini"
             type="text"
             icon="el-icon-collection"

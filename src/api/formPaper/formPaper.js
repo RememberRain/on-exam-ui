@@ -25,3 +25,11 @@ export function addSubFormPaper(data){
   })
 }
 
+export function changePaperStatus(param){
+  return request({
+    url: '/formPaper/formPaper/changePaperStatus',
+    method: 'post',
+    data: { paperId: param }
+  })
+}
+

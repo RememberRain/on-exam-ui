@@ -595,17 +595,41 @@
     </el-dialog>
 
 <!--    预览功能对话框-->
-    <el-dialog :title="this.paperName" :visible.sync="isPreview" width="1000px"append-to-body :show-close="false">
+    <el-dialog :title="this.paperName" :visible.sync="isPreview" width="1000px" append-to-body :show-close="false">
       <el-container v-if="this.isPreview">
         <el-aside width="300px">
           <div v-if="this.selectedChoice.length > 0">选择题</div>
-          <el-button type="primary" circle v-for="(item, index) in selectedChoice" :key="index">{{ index + 1 }}</el-button>
+          <el-button circle v-for="(item, index) in selectedChoice" @click="showQues(item,index)" :class="{'activeCircle': activeCircle === index + 1}">{{ index + 1 }}</el-button>
           <div v-if="this.selectedTf.length > 0">判断题</div>
-          <el-button type="primary" circle v-for="(item, index) in selectedTf" :key="index">{{ index + 1 }}</el-button>
+          <el-button circle v-for="(item, index) in selectedTf" @click="showQues(item,index)" :class="{'activeCircle': activeCircle === index + 1 + selectedChoice.length}">{{ index + 1 + selectedChoice.length }}</el-button>
           <div v-if="this.selectedSub.length > 0">主观题</div>
-          <el-button type="primary" circle v-for="(item, index) in selectedSub" :key="index">{{ index + 1 }}</el-button>
+          <el-button circle v-for="(item, index) in selectedSub" @click="showQues(item,index)" :class="{'activeCircle': activeCircle === index + 1 + selectedChoice.length + selectedTf.length}">{{ index + 1 + selectedChoice.length + selectedTf.length }}</el-button>
+          <el-alert
+            title="点击<下一题>保存答案!"
+            type="info"
+            effect="dark"
+          style="top: 10px;">
+          </el-alert>
         </el-aside>
-        <el-main></el-main>
+        <el-main>
+          <div class="ques">题目</div>
+          <div class="quesContent">{{this.activeCircle + "." + this.selectedItem.content }}</div>
+          <div v-if="this.selectedItem.choiceOne && this.selectedItem.type === '单选题'" class="quesChoice"><input type="radio" name="yourChoose" value="A" v-model="yourChoose"> A: {{ this.selectedItem.choiceOne }}</div>
+          <div v-if="this.selectedItem.choiceTwo && this.selectedItem.type === '单选题'" class="quesChoice"><input type="radio" name="yourChoose" value="B" v-model="yourChoose">B: {{ this.selectedItem.choiceTwo }}</div>
+          <div v-if="this.selectedItem.choiceThree && this.selectedItem.type === '单选题'" class="quesChoice"><input type="radio" name="yourChoose" value="C" v-model="yourChoose">C: {{ this.selectedItem.choiceThree }}</div>
+          <div v-if="this.selectedItem.choiceFour && this.selectedItem.type === '单选题'" class="quesChoice"><input type="radio" name="yourChoose" value="D" v-model="yourChoose">D: {{ this.selectedItem.choiceFour }}</div>
+          <div v-if="this.selectedItem.type === '多选题'" class="quesChoice"><input type="checkbox" value="A" v-model="yourChoices"> A: {{ this.selectedItem.choiceOne }}</div>
+          <div v-if="this.selectedItem.type === '多选题'" class="quesChoice"><input type="checkbox" value="B" v-model="yourChoices">B: {{ this.selectedItem.choiceTwo }}</div>
+          <div v-if="this.selectedItem.type === '多选题'" class="quesChoice"><input type="checkbox" value="C" v-model="yourChoices">C: {{ this.selectedItem.choiceThree }}</div>
+          <div v-if="this.selectedItem.type === '多选题'" class="quesChoice"><input type="checkbox" value="D" v-model="yourChoices">D: {{ this.selectedItem.choiceFour }}</div>
+          <div v-if="Object.keys(this.selectedItem).length < 10"><el-input
+            type="textarea"
+            :rows="6"
+            placeholder="请输入你的答案"
+            v-model="textArea">
+          </el-input></div>
+          <el-button type="primary" @click="nextQues()" class="quesButton" style="margin-top: 25px;margin-left: 535px;">{{ buttonText }}</el-button>
+        </el-main>
       </el-container>
     </el-dialog>
     <!--    查看已选题目-->
@@ -671,13 +695,20 @@ import {listEnglishSub} from "@/api/english/englishSub";
 import {getEnglishChoice} from "@/api/english/englishChoice";
 import {getEnglishTf} from "@/api/english/englishTf";
 import {getEnglishSub} from "@/api/english/englishSub";
-import { addChoiceFormPaper,addSubFormPaper, addTfFormPaper} from "@/api/formPaper/formPaper";
+import {addChoiceFormPaper, addSubFormPaper, addTfFormPaper, changePaperStatus} from "@/api/formPaper/formPaper";
 
 export default {
   name: "formPaper",
   dicts: ['choice_answer', 'choice_type', 'tf_answer'],
   data() {
     return {
+      yourChoices: [],
+      choiceMap: new Map(),
+      yourChoose: '',
+      textArea: '',
+      activeCircle: 1,
+      selectedItem: {},
+      isClick: false,
       isPreview: false,
       // 查看已选题的当前题型
       selectedButton: 'choice',
@@ -743,6 +774,7 @@ export default {
         content: null,
         type: null
       },
+      buttonText:'下一题'
     };
   },
   // 初始界面展示选择题题目列表
@@ -756,10 +788,105 @@ export default {
     }
   },
   methods: {
+    //下一题按钮
+    nextQues(){
+      if (this.buttonText === '完成'){
+        this.isPreview = false;
+        this.selectedItem = {};
+        this.activeCircle = 1;
+        this.buttonText = '下一题';
+        this.yourChoose = '';
+        this.yourChoices = [];
+        this.textArea = '';
+        this.choiceMap.clear();
+      } else{
+        if (Object.keys(this.selectedItem).length >= 10){
+          if (this.selectedItem.type === '单选题'){
+            this.choiceMap.set(this.activeCircle,this.yourChoose);
+          } else {
+            this.choiceMap.set(this.activeCircle,this.yourChoices);
+          }
+        } else {
+          this.choiceMap.set(this.activeCircle,this.textArea);
+        }
+        this.activeCircle ++;
+        if (this.yourChoose !== '' || this.textArea !== '' || this.yourChoices.length > 0){
+          this.$message.success("保存成功!");
+        }
+        if (this.choiceMap.get(this.activeCircle) !== undefined){
+          if (this.choiceMap.get(this.activeCircle) === 'A' || this.choiceMap.get(this.activeCircle) === 'B' || this.choiceMap.get(this.activeCircle) === 'C' ||this.choiceMap.get(this.activeCircle) === 'D'){
+            this.yourChoose = this.choiceMap.get(this.activeCircle);
+          } else if (this.choiceMap.get(this.activeCircle).length > 1 && this.choiceMap.get(this.activeCircle).length <= 4 && (this.choiceMap.get(this.activeCircle).includes('A') || this.choiceMap.get(this.activeCircle).includes('B') || this.choiceMap.get(this.activeCircle).includes('C') ||this.choiceMap.get(this.activeCircle).includes('D'))){
+            this.yourChoices = this.choiceMap.get(this.activeCircle);
+          }
+          else {
+            this.textArea = this.choiceMap.get(this.activeCircle);
+          }
+        } else {
+          this.yourChoose = '';
+          this.yourChoices = [];
+          this.textArea = '';
+        }
+        if (this.activeCircle === this.addRows.length){
+          this.buttonText = '完成';
+        }
+        if (this.activeCircle <= this.selectedChoice.length){
+          this.selectedItem = this.selectedChoice[this.activeCircle - 1];
+        } else if (this.activeCircle > this.selectedChoice.length && this.activeCircle <= this.selectedTf.length + this.selectedChoice.length){
+          this.selectedItem = this.selectedTf[this.activeCircle - this.selectedChoice.length - 1];
+        } else {
+          this.selectedItem = this.selectedSub[this.activeCircle - this.selectedChoice.length - this.selectedTf.length - 1];
+        }
+      }
+    },
+    //预览功能点击按钮展示题目
+    showQues(item,index){
+      console.log(this.selectedItem)
+      this.selectedItem = item;
+      if (Object.keys(item).length === 13){
+        this.activeCircle = index + 1;
+      } else if (Object.keys(item).length === 10){
+        this.activeCircle = index + 1 + this.selectedChoice.length;
+      } else {
+        this.activeCircle = index + 1 + this.selectedChoice.length + this.selectedTf.length;
+      }
+      if (this.activeCircle !== this.addRows.length){
+        this.buttonText = '下一题';
+      }else{
+        this.buttonText = '完成';
+      }
+      if (this.choiceMap.get(this.activeCircle) !== undefined){
+        if (Object.keys(this.selectedItem).length >= 10){
+          if (this.selectedItem.type === '单选题'){
+            this.yourChoose = this.choiceMap.get(this.activeCircle);
+          } else {
+            this.yourChoices = this.choiceMap.get(this.activeCircle);
+          }
+        } else {
+          this.textArea = this.choiceMap.get(this.activeCircle);
+        }
+      } else {
+        this.yourChoose = '';
+        this.yourChoices = [];
+        this.textArea = '';
+      }
+    },
     //预览功能
     preview(){
+      if (this.activeCircle === this.addRows.length){
+        this.buttonText = '完成';
+      }
       if (this.addRows.length !== 0){
         this.isPreview = true;
+        if (this.selectedChoice.length !== 0){
+          this.selectedItem = this.selectedChoice[0];
+        } else {
+          if (this.selectedTf.length !== 0){
+            this.selectedItem = this.selectedTf[0];
+          } else {
+            this.selectedItem = this.selectedSub[0];
+          }
+        }
       }else {
         this.$message.error('请先选择题目!');
       }
@@ -772,6 +899,7 @@ export default {
         } else if (this.addRows.length < 5 && this.addRows.length > 0){
           this.$message.error("请至少选择5道题目进行组卷")
         } else {
+          changePaperStatus(this.paperId);
           for (let i = 0; i < this.addRows.length; i ++){
             if (Object.keys(this.addRows[i]).length === 13){
               addChoiceFormPaper({
@@ -1163,6 +1291,11 @@ export default {
 </script>
 
 <style scoped>
+.activeCircle{
+  background-color: rgb(64,158,255);
+  color: white;
+}
+
 .listBottom {
   justify-content: space-between;
   display: -webkit-box;
@@ -1201,6 +1334,26 @@ export default {
 .active3 {
   background-color: rgb(255, 186, 0);
   color: white;
+}
+
+.ques{
+  font-size: 22px;
+  font-weight: bolder;
+  margin-top: -25px;
+}
+
+.quesContent{
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+.quesChoice{
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  margin-top: 17px;
 }
 </style>
 
